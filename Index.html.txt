@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tahfidz Competition 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .gradient-hero { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
+        .btn-primary { background: #2563eb; transition: all 0.2s; }
+        .btn-primary:hover { background: #1d4ed8; transform: scale(1.02); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .card-shadow { box-shadow: 0 12px 40px rgba(0,0,0,0.08); transition: all 0.3s ease; }
+        .card-shadow:hover { transform: translateY(-6px); box-shadow: 0 24px 60px rgba(0,0,0,0.12); }
+        .countdown-box { background: rgba(255,255,255,0.08); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); }
+        .section-title::after { content: ''; display: block; width: 60px; height: 4px; background: #2563eb; margin: 12px auto 0; border-radius: 4px; }
+        .status-badge { padding: 4px 14px; border-radius: 30px; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3px; }
+        .status-paid { background: #dcfce7; color: #15803d; }
+        .status-pending { background: #fef9c3; color: #a16207; }
+        .status-unpaid { background: #fee2e2; color: #b91c1c; }
+        .loading-spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<!-- ======== NAVBAR ======== -->
+<nav class="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl font-extrabold text-blue-600">THF</span>
+            <span class="text-sm font-medium text-gray-600 hidden sm:inline">| Tahfidz 2026</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="#register" class="hidden md:inline-block text-sm font-medium text-gray-700 hover:text-blue-600 transition">Daftar</a>
+            <a href="#cek-status" class="hidden md:inline-block text-sm font-medium text-gray-700 hover:text-blue-600 transition">Cek Status</a>
+            <a href="#register" class="btn-primary text-white px-5 py-2 rounded-full text-sm font-semibold shadow-md hover:shadow-lg transition">
+                <i class="fas fa-user-plus mr-1"></i> Daftar
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- ======== HERO ======== -->
+<section class="gradient-hero pt-28 pb-20 px-4 text-center relative overflow-hidden">
+    <div class="relative max-w-4xl mx-auto">
+        <div class="inline-block px-4 py-1 rounded-full bg-blue-500/20 backdrop-blur-sm text-blue-200 text-xs font-semibold tracking-wider mb-4 border border-blue-400/30">
+            <i class="fas fa-calendar-alt mr-1"></i> 10 Agustus 2026
+        </div>
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white leading-tight">
+            Lomba Tahfidz <br class="sm:hidden" />
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-cyan-300">Nasional 2026</span>
+        </h1>
+        <p class="text-blue-100/80 text-lg md:text-xl max-w-2xl mx-auto mt-4 leading-relaxed">
+            "Membangun Generasi Qur'ani yang Berprestasi" — Ikuti lomba hafalan Quran terbesar tahun ini.
+        </p>
+        <div class="mt-8 flex flex-wrap justify-center gap-4">
+            <a href="#register" class="bg-white text-blue-700 px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-2xl transition hover:scale-105 flex items-center gap-2">
+                <i class="fas fa-pen-fancy"></i> Daftar Sekarang
+            </a>
+            <a href="#about" class="border border-white/40 text-white px-8 py-3 rounded-full font-semibold hover:bg-white/10 transition flex items-center gap-2">
+                <i class="fas fa-info-circle"></i> Pelajari
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ======== COUNTDOWN ======== -->
+<section class="py-10 bg-gradient-to-b from-gray-50 to-white border-b border-gray-100">
+    <div class="max-w-5xl mx-auto px-4">
+        <div class="text-center mb-6">
+            <span class="text-xs font-semibold text-blue-600 bg-blue-50 px-4 py-1 rounded-full">COUNTDOWN</span>
+            <h2 class="text-2xl font-bold text-gray-800 mt-2">Menuju Penutupan Pendaftaran</h2>
+        </div>
+        <div id="countdown" class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto">
+            <div class="countdown-box rounded-2xl p-4 text-center bg-white/60 backdrop-blur-sm shadow-sm border border-gray-200/60">
+                <span id="days" class="block text-4xl font-extrabold text-blue-700">00</span>
+                <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Hari</span>
+            </div>
+            <div class="countdown-box rounded-2xl p-4 text-center bg-white/60 backdrop-blur-sm shadow-sm border border-gray-200/60">
+                <span id="hours" class="block text-4xl font-extrabold text-blue-700">00</span>
+                <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Jam</span>
+            </div>
+            <div class="countdown-box rounded-2xl p-4 text-center bg-white/60 backdrop-blur-sm shadow-sm border border-gray-200/60">
+                <span id="minutes" class="block text-4xl font-extrabold text-blue-700">00</span>
+                <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Menit</span>
+            </div>
+            <div class="countdown-box rounded-2xl p-4 text-center bg-white/60 backdrop-blur-sm shadow-sm border border-gray-200/60">
+                <span id="seconds" class="block text-4xl font-extrabold text-blue-700">00</span>
+                <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Detik</span>
+            </div>
+        </div>
+        <p id="countdown-message" class="text-center text-sm text-gray-500 mt-4 hidden">⏳ Pendaftaran telah ditutup.</p>
+    </div>
+</section>
+
+<!-- ======== ABOUT ======== -->
+<section id="about" class="py-16 px-4 bg-white">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12">
+            <span class="text-xs font-semibold text-blue-600 bg-blue-50 px-4 py-1 rounded-full">TENTANG LOMBA</span>
+            <h2 class="text-3xl font-bold text-gray-800 mt-2 section-title">Kategori & Jadwal</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-10">
+            <div class="bg-gray-50/60 p-6 rounded-2xl border border-gray-100 card-shadow">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2 mb-4"><i class="fas fa-layer-group text-blue-600"></i> Kategori Lomba</h3>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="bg-blue-50 text-blue-700 px-4 py-1 rounded-full text-sm font-medium">Juz 30</span>
+                    <span class="bg-blue-50 text-blue-700 px-4 py-1 rounded-full text-sm font-medium">Juz 29-30</span>
+                    <span class="bg-blue-50 text-blue-700 px-4 py-1 rounded-full text-sm font-medium">Juz 28-30</span>
+                    <span class="bg-blue-50 text-blue-700 px-4 py-1 rounded-full text-sm font-medium">5 Juz</span>
+                    <span class="bg-blue-50 text-blue-700 px-4 py-1 rounded-full text-sm font-medium">10 Juz</span>
+                </div>
+                <ul class="space-y-2 text-sm text-gray-600">
+                    <li><i class="fas fa-check-circle text-green-500 w-5"></i> Setiap peserta memilih satu kategori.</li>
+                    <li><i class="fas fa-check-circle text-green-500 w-5"></i> Hafalan diuji dengan metode tahfidz.</li>
+                    <li><i class="fas fa-check-circle text-green-500 w-5"></i> Penilaian: kelancaran, tajwid, fashahah, adab.</li>
+                </ul>
+            </div>
+            <div class="bg-gray-50/60 p-6 rounded-2xl border border-gray-100 card-shadow">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2 mb-4"><i class="fas fa-calendar-check text-blue-600"></i> Jadwal Kegiatan</h3>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between border-b border-gray-200/70 pb-2"><span class="font-medium">Pembukaan Pendaftaran</span><span class="text-gray-600">1 Juli 2026</span></div>
+                    <div class="flex justify-between border-b border-gray-200/70 pb-2"><span class="font-medium">Penutupan Pendaftaran</span><span class="text-gray-600">31 Juli 2026</span></div>
+                    <div class="flex justify-between border-b border-gray-200/70 pb-2"><span class="font-medium">Technical Meeting</span><span class="text-gray-600">5 Agustus 2026</span></div>
+                    <div class="flex justify-between border-b border-gray-200/70 pb-2"><span class="font-medium font-semibold text-blue-700">Pelaksanaan Lomba</span><span class="font-semibold text-blue-700">10 Agustus 2026</span></div>
+                    <div class="flex justify-between"><span class="font-medium">Pengumuman Juara</span><span class="text-gray-600">12 Agustus 2026</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-8 bg-blue-50/50 p-6 rounded-2xl border border-blue-100/60 text-center max-w-2xl mx-auto card-shadow">
+            <span class="text-sm font-semibold text-blue-700"><i class="fas fa-wallet mr-1"></i> Biaya Pendaftaran</span>
+            <p class="text-2xl font-extrabold text-gray-800 mt-1">Rp 50.000 <span class="text-sm font-normal text-gray-500">/ peserta</span></p>
+            <p class="text-sm text-gray-600 mt-1">Transfer ke <strong>BSI 7123456789</strong> a.n Yayasan XYZ</p>
+        </div>
+    </div>
+</section>
+
+<!-- ======== REGISTRATION FORM ======== -->
+<section id="register" class="py-16 px-4 bg-gray-50/80">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10">
+            <span class="text-xs font-semibold text-blue-600 bg-blue-50 px-4 py-1 rounded-full">FORMULIR</span>
+            <h2 class="text-3xl font-bold text-gray-800 mt-2 section-title">Pendaftaran Peserta</h2>
+            <p class="text-gray-500 mt-3 max-w-xl mx-auto">Isi data dengan benar. Semua field bertanda * wajib diisi.</p>
+        </div>
+
+        <form id="registrationForm" class="bg-white p-6 sm:p-8 rounded-3xl shadow-lg border border-gray-100/80 card-shadow">
+            <!-- Data Peserta -->
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap *</label>
+                    <input type="text" id="nama" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition" placeholder="Ahmad Fauzan" required />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Jenis Kelamin *</label>
+                    <select id="jenis_kelamin" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition" required>
+                        <option value="">Pilih</option>
+                        <option value="L">Laki-laki</option>
+                        <option value="P">Perempuan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tempat Lahir *</label>
+                    <input type="text" id="tempat_lahir" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition" placeholder="Bandung" required />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tanggal Lahir *</label>
+                    <input type="date" id="tanggal_lahir" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition" required />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Asal Sekolah *</label>
+                    <input type="text" id="sekolah" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition" placeholder="SDIT Al Hikmah" required />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Pembimbing *</label>
+                    <input type="text" id="pembimbing" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition" placeholder="Ustadz Abdullah" required />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">WA Peserta *</label>
+                    <input type="tel" id="wa_peserta" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition" placeholder="08123456789" required />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">WA Orang Tua *</label>
+                    <input type="tel" id="wa_orangtua" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition" placeholder="081298765432" required />
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Alamat Lengkap *</label>
+                    <input type="text" id="alamat" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition" placeholder="Jl. Contoh No. 123, Bandung" required />
+                </div>
+            </div>
+
+            <!-- Data Lomba -->
+            <div class="mt-6 border-t border-gray-200 pt-6">
+                <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fas fa-quran text-blue-600"></i> Data Perlombaan</h3>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Kategori *</label>
+                        <select id="kategori" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition" required>
+                            <option value="">Pilih Kategori</option>
+                            <option value="Juz 30">Juz 30</option>
+                            <option value="Juz 29-30">Juz 29-30</option>
+                            <option value="Juz 28-30">Juz 28-30</option>
+                            <option value="5 Juz">5 Juz</option>
+                            <option value="10 Juz">10 Juz</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Surah Awal *</label>
+                        <input type="text" id="surah_awal" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition" placeholder="An Naba" required />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Surah Akhir *</label>
+                        <input type="text" id="surah_akhir" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition" placeholder="An Nas" required />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Jumlah Hafalan</label>
+                        <input type="text" id="jumlah_hafalan" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition" placeholder="Misal: 5 Juz" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload -->
+            <div class="mt-6 border-t border-gray-200 pt-6">
+                <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fas fa-cloud-upload-alt text-blue-600"></i> Upload Dokumen</h3>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Foto Peserta * (JPG/PNG, max 2MB)</label>
+                        <input type="file" id="foto_peserta" accept="image/jpeg,image/png" class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition text-sm" required />
+                        <span class="text-xs text-gray-400">Format JPG/PNG</span>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Bukti Pembayaran * (JPG/PNG/PDF, max 5MB)</label>
+                        <input type="file" id="bukti_pembayaran" accept="image/jpeg,image/png,application/pdf" class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition text-sm" required />
+                        <span class="text-xs text-gray-400">JPG/PNG/PDF</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-sm text-gray-500"><i class="fas fa-lock text-gray-400 mr-1"></i> Data aman & terenkripsi</div>
+                <button type="submit" id="submitBtn" class="btn-primary text-white px-10 py-3.5 rounded-full font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2 text-lg w-full sm:w-auto justify-center">
+                    <i class="fas fa-paper-plane"></i> Daftar Sekarang
+                </button>
+            </div>
+            <div id="formStatus" class="mt-4 text-sm text-center text-gray-500 hidden"></div>
+        </form>
+    </div>
+</section>
+
+<!-- ======== CEK STATUS ======== -->
+<section id="cek-status" class="py-16 px-4 bg-white">
+    <div class="max-w-2xl mx-auto text-center">
+        <span class="text-xs font-semibold text-blue-600 bg-blue-50 px-4 py-1 rounded-full">CEK STATUS</span>
+        <h2 class="text-3xl font-bold text-gray-800 mt-2 section-title">Cek Status Pendaftaran</h2>
+        <p class="text-gray-500 mt-3">Masukkan nomor registrasi atau WhatsApp untuk melihat status.</p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <input type="text" id="statusInput" placeholder="THF-2026-0001 atau WA" class="flex-1 border border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition" />
+            <button id="checkStatusBtn" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition flex items-center justify-center gap-2">
+                <i class="fas fa-search"></i> Cek
+            </button>
+        </div>
+        <div id="statusResult" class="mt-6 text-left bg-gray-50 p-5 rounded-2xl border border-gray-200 hidden"></div>
+    </div>
+</section>
+
+<!-- ======== FOOTER ======== -->
+<footer class="bg-gray-900 text-white/70 py-12 px-4 border-t border-gray-800">
+    <div class="max-w-6xl mx-auto grid sm:grid-cols-2 md:grid-cols-4 gap-8">
+        <div>
+            <h4 class="text-white font-bold text-lg">THF 2026</h4>
+            <p class="text-sm mt-2">Lomba Tahfidz Nasional untuk generasi Qur'ani.</p>
+            <div class="flex gap-3 mt-4 text-white/50 text-lg">
+                <i class="fab fa-instagram hover:text-white transition cursor-pointer"></i>
+                <i class="fab fa-youtube hover:text-white transition cursor-pointer"></i>
+                <i class="fab fa-whatsapp hover:text-white transition cursor-pointer"></i>
+            </div>
+        </div>
+        <div><h5 class="text-white font-semibold mb-3">Tautan</h5><ul class="space-y-2 text-sm"><li><a href="#" class="hover:text-white transition">Beranda</a></li><li><a href="#about" class="hover:text-white transition">Tentang</a></li><li><a href="#register" class="hover:text-white transition">Daftar</a></li></ul></div>
+        <div><h5 class="text-white font-semibold mb-3">Dukungan</h5><ul class="space-y-2 text-sm"><li><a href="#" class="hover:text-white transition">Kontak</a></li><li><a href="#" class="hover:text-white transition">Pusat Bantuan</a></li><li><a href="#" class="hover:text-white transition">Kebijakan</a></li></ul></div>
+        <div><h5 class="text-white font-semibold mb-3">Mulai Sekarang</h5><p class="text-sm">Daftarkan diri Anda dan menangkan hadiah menarik.</p><a href="#register" class="inline-block mt-3 bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-semibold hover:bg-blue-700 transition">Daftar</a></div>
+    </div>
+    <div class="text-center text-xs text-white/30 border-t border-gray-800 pt-6 mt-8">© 2026 Tahfidz Competition. All rights reserved.</div>
+</footer>
+
+<!-- ======== JAVASCRIPT ======== -->
+<script>
+(function() {
+    'use strict';
+
+    // ============================================================
+    // ✅ URL API SUDAH DI SET DENGAN BENAR
+    // ============================================================
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxtYG_NRTHiv7RtK0cm-jvEWWCjmqOag3XBDjNY03TWJUZGMY-p23sFi1M7OaorLzRW7A/exec';
+    
+    const CONFIG = {
+        REGISTRATION_CLOSE: '2026-07-31T23:59:59',
+        COMPETITION_DATE: '2026-08-10T08:00:00',
+    };
+
+    // ========== COUNTDOWN ==========
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const target = new Date(CONFIG.REGISTRATION_CLOSE).getTime();
+        let diff = target - now;
+        const msgEl = document.getElementById('countdown-message');
+        
+        if (diff <= 0) {
+            document.getElementById('days').textContent = '00';
+            document.getElementById('hours').textContent = '00';
+            document.getElementById('minutes').textContent = '00';
+            document.getElementById('seconds').textContent = '00';
+            msgEl.classList.remove('hidden');
+            msgEl.textContent = '⏳ Pendaftaran telah ditutup.';
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-times-circle"></i> Ditutup';
+            return;
+        }
+        
+        msgEl.classList.add('hidden');
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        document.getElementById('days').textContent = String(days).padStart(2, '0');
+        document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+        document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+    }
+    
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // ========== FORM SUBMIT ==========
+    const form = document.getElementById('registrationForm');
+    const statusEl = document.getElementById('formStatus');
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+        statusEl.classList.add('hidden');
+
+        try {
+            // Validasi file
+            const fotoFile = document.getElementById('foto_peserta').files[0];
+            const buktiFile = document.getElementById('bukti_pembayaran').files[0];
+            
+            if (!fotoFile || !buktiFile) {
+                throw new Error('Upload foto dan bukti pembayaran wajib.');
+            }
+            
+            if (fotoFile.size > 2 * 1024 * 1024) {
+                throw new Error('Foto maksimal 2MB.');
+            }
+            
+            if (buktiFile.size > 5 * 1024 * 1024) {
+                throw new Error('Bukti pembayaran maksimal 5MB.');
+            }
+            
+            const allowedFoto = ['image/jpeg', 'image/png'];
+            const allowedBukti = ['image/jpeg', 'image/png', 'application/pdf'];
+            
+            if (!allowedFoto.includes(fotoFile.type)) {
+                throw new Error('Format foto harus JPG/PNG.');
+            }
+            
+            if (!allowedBukti.includes(buktiFile.type)) {
+                throw new Error('Format bukti harus JPG/PNG/PDF.');
+            }
+
+            // Baca file ke base64
+            const fotoBase64 = await readFileAsBase64(fotoFile);
+            const buktiBase64 = await readFileAsBase64(buktiFile);
+
+            // Kumpulkan data
+            const payload = {
+                nama: document.getElementById('nama').value.trim(),
+                jenis_kelamin: document.getElementById('jenis_kelamin').value,
+                tempat_lahir: document.getElementById('tempat_lahir').value.trim(),
+                tanggal_lahir: document.getElementById('tanggal_lahir').value,
+                sekolah: document.getElementById('sekolah').value.trim(),
+                pembimbing: document.getElementById('pembimbing').value.trim(),
+                wa_peserta: document.getElementById('wa_peserta').value.trim(),
+                wa_orangtua: document.getElementById('wa_orangtua').value.trim(),
+                alamat: document.getElementById('alamat').value.trim(),
+                kategori: document.getElementById('kategori').value,
+                surah_awal: document.getElementById('surah_awal').value.trim(),
+                surah_akhir: document.getElementById('surah_akhir').value.trim(),
+                foto: fotoBase64,
+                foto_nama: fotoFile.name,
+                foto_tipe: fotoFile.type,
+                bukti: buktiBase64,
+                bukti_nama: buktiFile.name,
+                bukti_tipe: buktiFile.type,
+            };
+
+            // Kirim ke API
+            const response = await fetch(API_URL + '?action=register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            
+            const result = await response.json();
+
+            if (result.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pendaftaran Berhasil!',
+                    html: `<strong>Nomor Registrasi:</strong> ${result.data.registration_id || 'THF-2026-xxxx'}<br/><span class="text-sm text-gray-500">Status: Menunggu Verifikasi</span>`,
+                    confirmButtonColor: '#2563eb',
+                    confirmButtonText: 'OK',
+                });
+                form.reset();
+                statusEl.innerHTML = `<span class="text-green-600"><i class="fas fa-check-circle"></i> Pendaftaran berhasil! ID: ${result.data.registration_id || 'THF-2026-xxxx'}</span>`;
+                statusEl.classList.remove('hidden');
+            } else {
+                throw new Error(result.message || 'Gagal mendaftar.');
+            }
+        } catch (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: err.message,
+                confirmButtonColor: '#2563eb'
+            });
+            statusEl.innerHTML = `<span class="text-red-500"><i class="fas fa-exclamation-circle"></i> ${err.message}</span>`;
+            statusEl.classList.remove('hidden');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Daftar Sekarang';
+        }
+    });
+
+    function readFileAsBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // ========== CEK STATUS ==========
+    document.getElementById('checkStatusBtn').addEventListener('click', async function() {
+        const input = document.getElementById('statusInput').value.trim();
+        const resultEl = document.getElementById('statusResult');
+        
+        if (!input) {
+            resultEl.innerHTML = '<p class="text-yellow-600"><i class="fas fa-exclamation-triangle"></i> Masukkan nomor registrasi atau WA.</p>';
+            resultEl.classList.remove('hidden');
+            return;
+        }
+        
+        try {
+            const url = API_URL + '?action=participant&id=' + encodeURIComponent(input);
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            if (data.success && data.data) {
+                const d = data.data;
+                let statusBadge = '';
+                const statusMap = {
+                    'LUNAS': 'status-paid',
+                    'MENUNGGU_VERIFIKASI': 'status-pending',
+                    'BELUM_BAYAR': 'status-unpaid',
+                    'DITOLAK': 'status-unpaid',
+                };
+                const cls = statusMap[d.status_pembayaran] || 'status-pending';
+                statusBadge = `<span class="status-badge ${cls}">${d.status_pembayaran || 'Belum Bayar'}</span>`;
+                
+                resultEl.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-gray-200 pb-3"><span class="font-bold text-gray-700">Nama</span><span>${d.nama || '-'}</span></div>
+                    <div class="flex justify-between items-center border-b border-gray-200 py-3"><span class="font-bold text-gray-700">Kategori</span><span>${d.kategori || '-'}</span></div>
+                    <div class="flex justify-between items-center border-b border-gray-200 py-3"><span class="font-bold text-gray-700">Status Pembayaran</span>${statusBadge}</div>
+                    <div class="flex justify-between items-center pt-3"><span class="font-bold text-gray-700">Status Pendaftaran</span><span class="font-semibold">${d.status_pendaftaran || 'DRAFT'}</span></div>
+                `;
+                resultEl.classList.remove('hidden');
+            } else {
+                resultEl.innerHTML = '<p class="text-red-500"><i class="fas fa-times-circle"></i> Data tidak ditemukan.</p>';
+                resultEl.classList.remove('hidden');
+            }
+        } catch (err) {
+            resultEl.innerHTML = `<p class="text-red-500"><i class="fas fa-exclamation-circle"></i> ${err.message}</p>`;
+            resultEl.classList.remove('hidden');
+        }
+    });
+
+})();
+</script>
+
+</body>
+</html>
